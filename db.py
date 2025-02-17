@@ -16,13 +16,14 @@ def create_connection():
 def create_table():
     conn = create_connection()
     cursor = conn.cursor()
+    #cursor.execute("DROP TABLE IF EXISTS clients;")
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS clients (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             username TEXT NOT NULL,
             email TEXT NOT NULL UNIQUE,
             dni TEXT NOT NULL UNIQUE,  -- Campo para el DNI
-            capital_solicitado REAL NOT NULL  -- Campo para el capital solicitado
+            capital REAL NOT NULL  -- Campo para el capital solicitado
         );
     ''')
     conn.commit()
@@ -30,14 +31,14 @@ def create_table():
 
 
 # Función para agregar un cliente
-def add_client(username: str, email: str, dni: str, capital_solicitado: float):
+def add_client(username: str, email: str, dni: str, capital: float):
     conn = create_connection()
     cursor = conn.cursor()
     try:
         cursor.execute('''
-            INSERT INTO clients (username, email, dni, capital_solicitado)
+            INSERT INTO clients (username, email, dni, capital)
             VALUES (?, ?, ?, ?)
-        ''', (username, email, dni, capital_solicitado))
+        ''', (username, email, dni, capital))
         conn.commit()
     except sqlite3.IntegrityError:
         raise Exception("Email or DNI already exists")
