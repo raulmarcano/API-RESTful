@@ -13,13 +13,34 @@ app = FastAPI(
 # Crear la tabla de clientes si no existe
 create_table()
 
-@app.get("/", summary="Basic route", description="Returns a basic message for testing a route")
+@app.get("/", 
+         summary="Basic route", 
+         description="Returns a basic message for testing a route", 
+         responses={
+             200: {
+                 "description": "It is really alive.",
+                 "content": {
+                     "application/json": {
+                         "example": {"message": "It's aliveee!"}
+                     }
+                 }
+             }
+         })
 def root():
     return{"message": "It´s aliveee!"}
 
-@app.post("/add_client", summary="Add a client",
+@app.post("/add_client",
+          summary="Add a client",
           description="Stores client data including username, email, DNI, and requested capital.",
-          response_model=ClientModel)
+          response_model=ClientModel,
+          responses={
+              400: {
+                  "description": "Invalid NIF/NIE format"
+              },
+              422: {
+                  "description": "Unprocessable Entity"
+              }
+          })
 @handle_exceptions
 async def add_client_rout(client: ClientModel):
     if not validate_nif(client.dni):
@@ -27,7 +48,18 @@ async def add_client_rout(client: ClientModel):
     add_client(client.username, client.email, client.dni.upper(), client.capital)
     return client
 
-@app.post("/update_client", summary="Update a client", description="Updates client data.")
+@app.post("/update_client",
+          summary="Update a client",
+          description="Updates client data.",
+          response_model=ClientModel,
+          responses={
+              404: {
+                  "description": "Resource not found: NIF do not exists"
+              },
+              422: {
+                  "description": "Unprocessable Entity"
+              }
+          })
 @handle_exceptions
 async def update_client_rout(client: ClientModel):
     updated_client = update_client(client.username, client.email, client.dni, client.capital)

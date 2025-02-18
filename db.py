@@ -68,4 +68,4 @@ def update_client(username: str, email: str, dni: str, capital: float):
         return {"username": username, "email": email, "dni": dni, "capital": capital}
     else:
         conn.close()
-        raise FileNotFoundError("DNI do not exists")  # Si no encuentra el cliente
+        raise FileNotFoundError("NIF do not exists")  # Si no encuentra el cliente
