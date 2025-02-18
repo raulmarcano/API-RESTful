@@ -32,6 +32,7 @@ def create_table():
 
 # Función para agregar un cliente
 def add_client(username: str, email: str, dni: str, capital: float):
+    dni = dni.upper()
     conn = create_connection()
     cursor = conn.cursor()
     try:
@@ -40,9 +41,11 @@ def add_client(username: str, email: str, dni: str, capital: float):
             VALUES (?, ?, ?, ?)
         ''', (username, email, dni, capital))
         conn.commit()
+        conn.close()
     except sqlite3.IntegrityError:
+        conn.close()
         raise Exception("Email or DNI already exists")
-    conn.close()
+
 
 # Función para actualizar un cliente por DNI
 def update_client(username: str, email: str, dni: str, capital: float):
@@ -65,4 +68,4 @@ def update_client(username: str, email: str, dni: str, capital: float):
         return {"username": username, "email": email, "dni": dni, "capital": capital}
     else:
         conn.close()
-        return None  # Si no encuentra el cliente, devuelve None
+        raise FileNotFoundError("DNI do not exists")  # Si no encuentra el cliente
