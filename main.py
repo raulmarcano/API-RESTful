@@ -1,5 +1,5 @@
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Query
 import uvicorn
 from db import *
 from models import ClientModel
@@ -62,6 +62,24 @@ async def add_client_rout(client: ClientModel):
           })
 @handle_exceptions
 async def update_client_rout(client: ClientModel):
-    updated_client = update_client(client.username, client.email, client.nif, client.capital)
+    updated_client = update_client(client.username, client.email, client.nif.upper(), client.capital)
     if updated_client:
         return updated_client
+
+  
+@app.get("/get_client", 
+         summary="Get a client by DNI", 
+         description="Returns client data by providing their NIF.",
+         response_model=ClientModel,
+         responses={
+             404: {
+                 "description": "Client not found with the given NIF"
+             },
+             422: {
+                 "description": "Unprocessable Entity. The provided NIF is invalid or does not match the expected format."
+             }
+         })
+@handle_exceptions
+async def get_client(nif: str = Query(..., description="The NIF (DNI or NIE) of the client to retrieve. It should be a valid 8-12 character identifier.")):
+    client = get_client_by_nif(nif)
+    return client

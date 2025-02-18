@@ -50,22 +50,46 @@ def add_client(username: str, email: str, nif: str, capital: float):
 # Función para actualizar un cliente por nif
 def update_client(username: str, email: str, nif: str, capital: float):
     conn = create_connection()
-    cursor = conn.cursor()
+    try:
+        cursor = conn.cursor()
 
-    cursor.execute('''
-        SELECT id FROM clients WHERE nif = ?
-    ''', (nif,))
-    client = cursor.fetchone()
-
-    if client:
         cursor.execute('''
-            UPDATE clients
-            SET username = ?, email = ?, capital = ?
-            WHERE nif = ?
-        ''', (username, email, capital, nif))
-        conn.commit()
+            SELECT id FROM clients WHERE nif = ?
+        ''', (nif,))
+        client = cursor.fetchone()
+
+        if client:
+            cursor.execute('''
+                UPDATE clients
+                SET username = ?, email = ?, capital = ?
+                WHERE nif = ?
+            ''', (username, email, capital, nif))
+            conn.commit()
+            return {"username": username, "email": email, "nif": nif, "capital": capital}
+        else:
+            raise FileNotFoundError("NIF do not exists")
+    finally:
         conn.close()
-        return {"username": username, "email": email, "nif": nif, "capital": capital}
-    else:
+        
+
+def get_client_by_nif(nif: str):
+    conn = create_connection()
+    try:
+        cursor = conn.cursor()
+        cursor.execute('''
+            SELECT username, email, nif, capital FROM clients WHERE nif = ?
+        ''', (nif,))
+        client = cursor.fetchone()
+        
+        if client:
+            username, email, nif, capital = client
+            return {
+                "username": username,
+                "email": email,
+                "nif": nif,
+                "capital": capital
+            }       
+        else:
+            raise FileNotFoundError("NIF do not exists")
+    finally:
         conn.close()
-        raise FileNotFoundError("NIF do not exists")  # Si no encuentra el cliente
