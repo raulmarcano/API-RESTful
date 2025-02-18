@@ -31,7 +31,7 @@ def root():
 
 @app.post("/add_client",
           summary="Add a client",
-          description="Stores client data including username, email, DNI, and requested capital.",
+          description="Stores client data including username, email, nif, and requested capital. It first validates email and nif",
           response_model=ClientModel,
           responses={
               400: {
@@ -43,9 +43,9 @@ def root():
           })
 @handle_exceptions
 async def add_client_rout(client: ClientModel):
-    if not validate_nif(client.dni):
-        raise HTTPException(status_code=400, detail="Invalid NIF/NIE format")
-    add_client(client.username, client.email, client.dni.upper(), client.capital)
+    if not validate_nif(client.nif):
+        raise HTTPException(status_code=400, detail="Invalid NIF format")
+    add_client(client.username, client.email, client.nif.upper(), client.capital)
     return client
 
 @app.post("/update_client",
@@ -62,6 +62,6 @@ async def add_client_rout(client: ClientModel):
           })
 @handle_exceptions
 async def update_client_rout(client: ClientModel):
-    updated_client = update_client(client.username, client.email, client.dni, client.capital)
+    updated_client = update_client(client.username, client.email, client.nif, client.capital)
     if updated_client:
         return updated_client

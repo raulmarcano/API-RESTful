@@ -22,7 +22,7 @@ def create_table():
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             username TEXT NOT NULL,
             email TEXT NOT NULL UNIQUE,
-            dni TEXT NOT NULL UNIQUE,  -- Campo para el DNI
+            nif TEXT NOT NULL UNIQUE,
             capital REAL NOT NULL  -- Campo para el capital solicitado
         );
     ''')
@@ -31,41 +31,41 @@ def create_table():
 
 
 # Función para agregar un cliente
-def add_client(username: str, email: str, dni: str, capital: float):
-    dni = dni.upper()
+def add_client(username: str, email: str, nif: str, capital: float):
+    nif = nif.upper()
     conn = create_connection()
     cursor = conn.cursor()
     try:
         cursor.execute('''
-            INSERT INTO clients (username, email, dni, capital)
+            INSERT INTO clients (username, email, nif, capital)
             VALUES (?, ?, ?, ?)
-        ''', (username, email, dni, capital))
+        ''', (username, email, nif, capital))
         conn.commit()
         conn.close()
     except sqlite3.IntegrityError:
         conn.close()
-        raise Exception("Email or DNI already exists")
+        raise Exception("Email or NIF already exists")
 
 
-# Función para actualizar un cliente por DNI
-def update_client(username: str, email: str, dni: str, capital: float):
+# Función para actualizar un cliente por nif
+def update_client(username: str, email: str, nif: str, capital: float):
     conn = create_connection()
     cursor = conn.cursor()
 
     cursor.execute('''
-        SELECT id FROM clients WHERE dni = ?
-    ''', (dni,))
+        SELECT id FROM clients WHERE nif = ?
+    ''', (nif,))
     client = cursor.fetchone()
 
     if client:
         cursor.execute('''
             UPDATE clients
             SET username = ?, email = ?, capital = ?
-            WHERE dni = ?
-        ''', (username, email, capital, dni))
+            WHERE nif = ?
+        ''', (username, email, capital, nif))
         conn.commit()
         conn.close()
-        return {"username": username, "email": email, "dni": dni, "capital": capital}
+        return {"username": username, "email": email, "nif": nif, "capital": capital}
     else:
         conn.close()
         raise FileNotFoundError("NIF do not exists")  # Si no encuentra el cliente
