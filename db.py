@@ -29,7 +29,6 @@ def create_table():
     conn.commit()
     conn.close()
 
-
 # Función para agregar un cliente
 def add_client(username: str, email: str, nif: str, capital: float):
     nif = nif.upper()
@@ -45,7 +44,6 @@ def add_client(username: str, email: str, nif: str, capital: float):
     except sqlite3.IntegrityError:
         conn.close()
         raise Exception("Email or NIF already exists")
-
 
 # Función para actualizar un cliente por nif
 def update_client(username: str, email: str, nif: str, capital: float):
@@ -67,11 +65,11 @@ def update_client(username: str, email: str, nif: str, capital: float):
             conn.commit()
             return {"username": username, "email": email, "nif": nif, "capital": capital}
         else:
-            raise FileNotFoundError("NIF do not exists")
+            raise FileNotFoundError("NIF does not exist")
     finally:
         conn.close()
-        
 
+# Función para obtener un cliente por nif
 def get_client_by_nif(nif: str):
     conn = create_connection()
     try:
@@ -90,6 +88,40 @@ def get_client_by_nif(nif: str):
                 "capital": capital
             }       
         else:
-            raise FileNotFoundError("NIF do not exists")
+            raise FileNotFoundError("NIF does not exist")
+    finally:
+        conn.close()
+
+# Función para crear la tabla de amortizaciones
+def create_mortgage_simulation_table():
+    conn = create_connection()
+    cursor = conn.cursor()
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS mortgage_simulations (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            nif TEXT NOT NULL,
+            capital REAL NOT NULL,
+            tae REAL NOT NULL,
+            years INTEGER NOT NULL,
+            monthly_pay REAL NOT NULL,
+            total REAL NOT NULL,
+            FOREIGN KEY (nif) REFERENCES clients(nif)
+        );
+    ''')
+    conn.commit()
+    conn.close()
+
+# Función para añadir datos de amortización a la tabla
+def add_mortgage_simulation(nif: str, capital: float, tae: float, years: int, monthly_pay: float, total: float):
+    conn = create_connection()
+    cursor = conn.cursor()
+    try:
+        cursor.execute('''
+            INSERT INTO mortgage_simulations (nif, capital, tae, years, monthly_pay, total)
+            VALUES (?, ?, ?, ?, ?, ?)
+        ''', (nif, capital, tae, years, monthly_pay, total))
+        conn.commit()
+    except sqlite3.IntegrityError:
+        raise Exception("Error saving simulation on database")
     finally:
         conn.close()

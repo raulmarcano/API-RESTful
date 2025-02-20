@@ -37,3 +37,14 @@ def validate_nif(nif):
     letter_calc = letter_dict[nif_integer % 23]
 
     return last_letter == letter_calc
+
+def calc_mortgage(capital: float, tae: float, years: int):
+    i = tae / 100 / 12
+    n = years * 12 
+    montly_pay = capital * i / (1 - (1 + i) ** -n)
+    total = montly_pay * n
+
+    return {
+        "montly_pay": round(montly_pay, 2),
+        "total": round(total, 2)
+    }

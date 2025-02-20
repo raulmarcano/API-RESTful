@@ -12,6 +12,7 @@ app = FastAPI(
 
 # Crear la tabla de clientes si no existe
 create_table()
+create_mortgage_simulation_table()
 
 @app.get("/", 
          summary="Basic route", 
@@ -54,7 +55,7 @@ async def add_client_rout(client: ClientModel):
           response_model=ClientModel,
           responses={
               404: {
-                  "description": "Resource not found: NIF do not exists"
+                  "description": "Resource not found: NIF does not exist"
               },
               422: {
                   "description": "Unprocessable Entity"
@@ -66,9 +67,8 @@ async def update_client_rout(client: ClientModel):
     if updated_client:
         return updated_client
 
-  
 @app.get("/get_client", 
-         summary="Get a client by DNI", 
+         summary="Get a client by NIF", 
          description="Returns client data by providing their NIF.",
          response_model=ClientModel,
          responses={
@@ -80,6 +80,54 @@ async def update_client_rout(client: ClientModel):
              }
          })
 @handle_exceptions
-async def get_client(nif: str = Query(..., description="The NIF (DNI or NIE) of the client to retrieve. It should be a valid 8-12 character identifier.")):
+async def get_client_rout(nif: str = Query(..., description="The NIF (DNI or NIE) of the client to retrieve. It should be a valid 8-12 character identifier.")):
     client = get_client_by_nif(nif)
     return client
+
+@app.post("/simulate_mortgage",
+          summary="Simulate a mortgage for a client",
+          description="Calculates the monthly mortgage payment and total amount to be repaid based on the client's capital, TAE and term.",
+          responses={
+                200: {
+                  "description": "Successful mortgage simulation",
+                  "content": {
+                      "application/json": {
+                          "example": {
+                              "nif": "55127366T",
+                              "capital": 100000,
+                              "tae": 3.5,
+                              "years": 20,
+                              "monthly_pay": 579.98,
+                              "total": 139195.20
+                            }
+                        }
+                    }
+                },
+              404: {
+                  "description": "Client not found with the given NIF"
+              },
+              422: {
+                  "description": "Unprocessable Entity. The provided TAE or term is invalid."
+              }
+          })
+@handle_exceptions
+async def simulate_mortgage(nif: str = Query(..., description="The NIF (DNI or NIE) of the client to retrieve. It should be a valid 8-12 character identifier."),
+                            tae: float = Query(..., description="Annual Percentage Rate"), 
+                            years: int = Query(..., description="Number of years over which the mortgage will be repaid")):
+    client = get_client_by_nif(nif.upper())
+    if not client:
+        raise HTTPException(status_code=404, detail="Client not found with the given NIF")
+    if tae <= 0 or years <= 0:
+        raise HTTPException(status_code=422, detail="Invalid TAE or years of payment")
+
+    simulation = calc_mortgage(client["capital"], tae, years)
+    add_mortgage_simulation(nif, client["capital"], tae, years, simulation["montly_pay"], simulation["total"])
+
+    return {
+        "nif": nif,
+        "capital": client["capital"],
+        "tae": tae,
+        "years": years,
+        "monthly_pay": simulation["montly_pay"],
+        "total": simulation["total"]
+    }
