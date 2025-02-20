@@ -7,15 +7,16 @@ from helpers import *
 
 app = FastAPI(
     title= "API_REST",
+    description="An API for managing clients and mortgage simulations.",
     docs_url="/docs",
-    root_path="/")
+    root_path="/api")
 
 # Crear la tabla de clientes si no existe
 create_table()
 create_mortgage_simulation_table()
 
 @app.get("/", 
-         summary="Basic route", 
+         summary="Test route", 
          description="Returns a basic message for testing a route", 
          responses={
              200: {
@@ -131,3 +132,30 @@ async def simulate_mortgage(nif: str = Query(..., description="The NIF (DNI or N
         "monthly_pay": simulation["montly_pay"],
         "total": simulation["total"]
     }
+
+@app.delete("/delete_client",
+            summary="Delete a client and related mortgage simulations",
+            description="Deletes a client and all associated mortgage simulations from the database.",
+            responses={
+                200: {
+                    "description": "Successful deletion",
+                    "content": {
+                        "application/json": {
+                            "example": {
+                                "message": "Client and related mortgage simulations successfully deleted"
+                            }
+                        }
+                    }
+                },
+                404: {
+                    "description": "Client not found with the given NIF"
+                },
+                422: {"description": "Invalid NIF"}
+            })
+@handle_exceptions
+async def delete_client(nif: str = Query(..., description="The NIF of the client to delete.")):
+    client = get_client_by_nif(nif.upper())
+    if not client:
+        raise HTTPException(status_code=404, detail="Client not found")
+    delete_client_by_nif(nif.upper())
+    return {"message": "Client and related mortgage simulations successfully deleted"}

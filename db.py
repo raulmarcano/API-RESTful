@@ -91,6 +91,24 @@ def get_client_by_nif(nif: str):
             raise FileNotFoundError("NIF does not exist")
     finally:
         conn.close()
+        
+# Función para eliminar un cliente por nif
+def delete_client_by_nif(nif: str):
+    conn = create_connection()
+    try:
+        cursor = conn.cursor()
+        client = get_client_by_nif(nif)
+
+        if client:
+            cursor.execute('''
+                DELETE FROM clients WHERE nif = ?
+            ''', (nif,))
+            conn.commit()
+            return {"message": f"Client with NIF:{nif} successfully deleted"}
+        else:
+            raise FileNotFoundError("NIF does not exist")
+    finally:
+        conn.close()
 
 # Función para crear la tabla de amortizaciones
 def create_mortgage_simulation_table():
