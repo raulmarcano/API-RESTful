@@ -3,6 +3,12 @@
 
 Este proyecto proporciona una **API REST** para gestionar clientes y realizar simulaciones de hipotecas. La API permite agregar, actualizar, obtener, eliminar clientes y simular hipotecas basadas en los datos proporcionados.
 
+## Documentación
+
+La API proporciona documentación interactiva generada automaticamente por **FastAPI**. Puedes acceder a la documentación en tiempo real a través de la siguiente URL:
+
+`http://localhost:8000/docs`
+
 ## Funcionalidades
 
 ### Gestión de Clientes
@@ -81,10 +87,10 @@ Almacena las simulaciones de hipotecas relacionadas con los clientes. Los campos
     "capital": 150000
 }
 ```
-  #### Observaciones
-    - Se comprueba que el NIF contenga la letra correcta por el algoritmo oficial. 
-    - El NIF acepta letras minusculas y las transforma a mayusculas pero no acepta formatos con guiones o espacios: 55127345-C❌ Y-1234567.N❌
-    - Se comprueba que el email tenga un formato de correo valido.
+#### Observaciones
+  - Se comprueba que el NIF contenga la letra correcta por el algoritmo oficial. 
+  - El NIF acepta letras minúsculas y las transforma a mayúsculas pero no acepta formatos con guiones o espacios: 55127345-C❌ Y-1234567.N❌
+  - Se comprueba que el email tenga un formato de correo válido.
 
 - **Respuestas**:
   - 200: Cliente agregado exitosamente.
