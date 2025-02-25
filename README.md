@@ -87,10 +87,10 @@ Almacena las simulaciones de hipotecas relacionadas con los clientes. Los campos
     "capital": 150000
 }
 ```
-#### Observaciones
-  - Se comprueba que el NIF contenga la letra correcta por el algoritmo oficial. 
-  - El NIF acepta letras minúsculas y las transforma a mayúsculas pero no acepta formatos con guiones o espacios: 55127345-C❌ Y-1234567.N❌
-  - Se comprueba que el email tenga un formato de correo válido.
+> [!IMPORTANT]
+> - Se comprueba que el NIF contenga la letra correcta por el algoritmo oficial. 
+> - El NIF acepta letras minúsculas y las transforma a mayúsculas pero no acepta formatos con guiones o espacios: 55127345-C❌ Y-1234567.N❌
+> - Se comprueba que el email tenga un formato de correo válido.
 
 - **Respuestas**:
   - 200: Cliente agregado exitosamente.
