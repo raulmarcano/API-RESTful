@@ -1,9 +1,12 @@
-
-from fastapi import FastAPI, HTTPException, Query
 import uvicorn
-from db import *
-from models import ClientModel
-from helpers import *
+
+from fastapi import FastAPI, Query
+
+from models.clientModel import ClientModel
+from services.client_service import ClientService
+from services.mortgage_service import MortgageService
+from utils.error_handler import handle_exceptions
+from database.db import *
 
 app = FastAPI(
     title= "API_REST",
@@ -45,10 +48,7 @@ def root():
           })
 @handle_exceptions
 async def add_client_rout(client: ClientModel):
-    if not validate_nif(client.nif):
-        raise HTTPException(status_code=400, detail="Invalid NIF format")
-    add_client(client.username, client.email, client.nif.upper(), client.capital)
-    return client
+    return ClientService.create_client(client)
 
 @app.post("/update_client",
           summary="Update a client",
@@ -64,9 +64,7 @@ async def add_client_rout(client: ClientModel):
           })
 @handle_exceptions
 async def update_client_rout(client: ClientModel):
-    updated_client = update_client(client.username, client.email, client.nif.upper(), client.capital)
-    if updated_client:
-        return updated_client
+    return ClientService.modify_client(client)
 
 @app.get("/get_client", 
          summary="Get a client by NIF", 
@@ -82,8 +80,7 @@ async def update_client_rout(client: ClientModel):
          })
 @handle_exceptions
 async def get_client_rout(nif: str = Query(..., description="The NIF (DNI or NIE) of the client to retrieve. It should be a valid 8-12 character identifier.")):
-    client = get_client_by_nif(nif)
-    return client
+    return ClientService.find_client(nif)
 
 @app.post("/simulate_mortgage",
           summary="Simulate a mortgage for a client",
@@ -115,23 +112,7 @@ async def get_client_rout(nif: str = Query(..., description="The NIF (DNI or NIE
 async def simulate_mortgage(nif: str = Query(..., description="The NIF (DNI or NIE) of the client to retrieve. It should be a valid 8-12 character identifier."),
                             tae: float = Query(..., description="Annual Percentage Rate"), 
                             years: int = Query(..., description="Number of years over which the mortgage will be repaid")):
-    client = get_client_by_nif(nif.upper())
-    if not client:
-        raise HTTPException(status_code=404, detail="Client not found with the given NIF")
-    if tae <= 0 or years <= 0:
-        raise HTTPException(status_code=422, detail="Invalid TAE or years of payment")
-
-    simulation = calc_mortgage(client["capital"], tae, years)
-    add_mortgage_simulation(nif, client["capital"], tae, years, simulation["montly_pay"], simulation["total"])
-
-    return {
-        "nif": nif,
-        "capital": client["capital"],
-        "tae": tae,
-        "years": years,
-        "monthly_pay": simulation["montly_pay"],
-        "total": simulation["total"]
-    }
+    return MortgageService.simulate_mortgage(nif, tae, years)
 
 @app.delete("/delete_client",
             summary="Delete a client and related mortgage simulations",
@@ -154,8 +135,4 @@ async def simulate_mortgage(nif: str = Query(..., description="The NIF (DNI or N
             })
 @handle_exceptions
 async def delete_client(nif: str = Query(..., description="The NIF of the client to delete.")):
-    client = get_client_by_nif(nif.upper())
-    if not client:
-        raise HTTPException(status_code=404, detail="Client not found")
-    delete_client_by_nif(nif.upper())
-    return {"message": "Client and related mortgage simulations successfully deleted"}
+    return ClientService.remove_client(nif)

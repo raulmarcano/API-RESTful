@@ -1,7 +1,7 @@
 import sqlite3
 from sqlite3 import Error
 
-DATABASE_URL = "database.db"
+DATABASE_URL = "sqlite/database.db"
 
 # Crear la conexión a la base de datos
 def create_connection():
