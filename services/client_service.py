@@ -1,5 +1,5 @@
 from fastapi import HTTPException
-from database.db import *
+from database.db import db
 from models.clientModel import ClientModel
 
 class ClientService:
@@ -30,29 +30,29 @@ class ClientService:
     def create_client(client: ClientModel):
         if not ClientService.validate_nif(client.nif):
             raise HTTPException(status_code=400, detail="Invalid NIF format")
-        add_client(client.username, client.email, client.nif.upper(), client.capital)
+        db.add_client(client.username, client.email, client.nif.upper(), client.capital)
         return client
 
     @staticmethod
     def modify_client(client: ClientModel):
-        updated_client = update_client(client.username, client.email, client.nif.upper(), client.capital)
+        updated_client = db.update_client(client.username, client.email, client.nif.upper(), client.capital)
         if updated_client:
             return updated_client
         raise HTTPException(status_code=404, detail="Client not found")
 
     @staticmethod
     def find_client(nif: str):
-        client = get_client_by_nif(nif.upper())
+        client = db.get_client_by_nif(nif.upper())
         if not client:
             raise HTTPException(status_code=404, detail="Client not found with the given NIF")
         return client
 
     @staticmethod
     def remove_client(nif: str):
-        client = get_client_by_nif(nif.upper())
+        client = db.get_client_by_nif(nif.upper())
         if not client:
             raise HTTPException(status_code=404, detail="Client not found")
-        delete_client_by_nif(nif.upper())
+        db.delete_client_by_nif(nif.upper())
         return {"message": "Client and related mortgage simulations successfully deleted"}
 
     

@@ -6,7 +6,6 @@ from models.clientModel import ClientModel
 from services.client_service import ClientService
 from services.mortgage_service import MortgageService
 from utils.error_handler import handle_exceptions
-from database.db import *
 
 app = FastAPI(
     title= "API_REST",
@@ -14,9 +13,6 @@ app = FastAPI(
     docs_url="/docs",
     root_path="/api")
 
-# Crear la tabla de clientes si no existe
-create_table()
-create_mortgage_simulation_table()
 
 @app.get("/", 
          summary="Test route", 

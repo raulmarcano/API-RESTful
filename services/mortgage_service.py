@@ -1,5 +1,5 @@
 from fastapi import HTTPException
-from database.db import add_mortgage_simulation
+from database.db import db
 from services.client_service import ClientService
 
 class MortgageService:
@@ -24,7 +24,7 @@ class MortgageService:
             raise HTTPException(status_code=422, detail="Invalid TAE or years of payment")
 
         simulation = MortgageService.calc_mortgage(client["capital"], tae, years)  # ✅ Ahora funciona bien
-        add_mortgage_simulation(nif, client["capital"], tae, years, simulation["monthly_pay"], simulation["total"])
+        db.add_mortgage_simulation(nif, client["capital"], tae, years, simulation["monthly_pay"], simulation["total"])
 
         return {
             "nif": nif,
