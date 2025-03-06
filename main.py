@@ -1,6 +1,9 @@
 import uvicorn
 
-from fastapi import FastAPI, Query
+from typing import Annotated
+from fastapi import FastAPI, Query, Request, Form
+from fastapi.templating import Jinja2Templates
+from fastapi.responses import HTMLResponse
 
 from models.clientModel import ClientModel
 from services.client_service import ClientService
@@ -13,8 +16,27 @@ app = FastAPI(
     docs_url="/docs",
     root_path="/api")
 
+Jinja2_template = Jinja2Templates(directory="front/templates")
 
-@app.get("/", 
+@app.get("/", response_class=HTMLResponse)
+def root(request: Request):
+    return Jinja2_template.TemplateResponse("index.html", {"request": request})
+
+
+@app.post("/users/login")
+def login(username: Annotated[str, Form()], password: Annotated[str, Form()]):
+    return {
+        "username": username,
+        "password": password
+    }
+
+# @app.get("/users/dashboard", response_class=HTMLResponse, summary="Test protected route")
+# def dashboard(request: Request):
+#     return Jinja2_template.TemplateResponse("dashboard.html", {"request": request})
+
+
+
+@app.get("/test", 
          summary="Test route", 
          description="Returns a basic message for testing a route", 
          responses={
@@ -27,7 +49,7 @@ app = FastAPI(
                  }
              }
          })
-def root():
+def test():
     return{"message": "It´s aliveee!"}
 
 @app.post("/add_client",
