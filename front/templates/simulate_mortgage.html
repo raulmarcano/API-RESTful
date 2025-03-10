@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulate Mortgage</title>
+    <link rel="stylesheet" href="/static/form-styles.css">
+</head>
+<body>
+    <div class="form-container">
+        <h2>Simulate Mortgage</h2>
+        <form action="/simulate_mortgage" method="get">
+            <div>
+                <label for="nif">Enter Client NIF</label>
+                <input type="text" id="nif" name="nif" required>
+            </div>
+            <div>
+                <label for="tae">Annual Interest Rate (TAE)</label>
+                <input type="number" step="0.1" id="tae" name="tae" required>
+            </div>
+            <div>
+                <label for="years">Number of Years</label>
+                <input type="number" id="years" name="years" required>
+            </div>
+            <button type="submit">Simulate</button>
+        </form>
+    </div>
+</body>
+</html>

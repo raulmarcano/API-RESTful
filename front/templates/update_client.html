@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Update Client</title>
+    <link rel="stylesheet" href="/static/form-styles.css">
+</head>
+<body>
+    <div class="form-container">
+        <h2>Update Client Information</h2>
+        <form action="/update_client" method="post">
+            <div>
+                <label for="nif">Enter Client NIF</label>
+                <input type="text" id="nif" name="nif" required>
+            </div>
+            <div>
+                <label for="username">New Username</label>
+                <input type="text" id="username" name="username" required>
+            </div>
+            <div>
+                <label for="email">New Email</label>
+                <input type="email" id="email" name="email" required>
+            </div>
+            <div>
+                <label for="capital">New Requested Capital</label>
+                <input type="number" id="capital" name="capital" required>
+            </div>
+            <button type="submit">Update Client</button>
+        </form>
+    </div>
+</body>
+</html>

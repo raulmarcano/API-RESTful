@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Get Client Info</title>
+    <link rel="stylesheet" href="/static/form-styles.css">
+    <link rel="stylesheet" href="/static/getClient_results.css">
+</head>
+<body>
+    <div class="form-container">
+        <h2>Get Client Information</h2>
+        <form id="getClientForm">
+            <div>
+                <label for="nif">Enter Client NIF</label>
+                <input type="text" id="nif" name="nif" required>
+            </div>
+            <button type="submit">Get Client Info</button>
+        </form>
+
+        <div id="client-details">
+            <h3>Client Details</h3>
+            <div><strong>Username:</strong> <span id="username"></span></div>
+            <div><strong>Email:</strong> <span id="email"></span></div>
+            <div><strong>NIF:</strong> <span id="nif-info"></span></div>
+            <div><strong>Requested Capital:</strong> <span id="capital"></span></div>
+        </div>
+
+        <div id="error-message" style="display:none;">
+            Client not found or invalid NIF.
+        </div>
+
+        <button id="clearButton" type="button" style="display:none;">Clear Results</button>
+    </div>
+
+    <script>
+        // Manejo del formulario de solicitud de cliente
+        document.getElementById("getClientForm").addEventListener("submit", async function(event) {
+            event.preventDefault();
+
+            const nif = document.getElementById("nif").value;
+            try {
+                const response = await fetch(`/get_client?nif=${nif}`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                if (response.ok) {
+                    const clientData = await response.json();
+                    // Mostrar los datos del cliente
+                    document.getElementById("username").textContent = clientData.username;
+                    document.getElementById("email").textContent = clientData.email;
+                    document.getElementById("nif-info").textContent = clientData.nif;
+                    document.getElementById("capital").textContent = clientData.capital;
+
+                    // Mostrar el contenedor de detalles
+                    document.getElementById("client-details").style.display = 'block';
+                    document.getElementById("error-message").style.display = 'none';
+                    document.getElementById("clearButton").style.display = 'block';
+                } else {
+                    document.getElementById("client-details").style.display = 'none';
+                    document.getElementById("error-message").style.display = 'block';
+                    document.getElementById("clearButton").style.display = 'block';
+                }
+            } catch (error) {
+                console.error("Error fetching client data:", error);
+                document.getElementById("client-details").style.display = 'none';
+                document.getElementById("error-message").style.display = 'block';
+            }
+        });
+        document.getElementById("clearButton").addEventListener("click", function() {
+            document.getElementById("nif").value = ''; 
+            document.getElementById("client-details").style.display = 'none';
+            document.getElementById("error-message").style.display = 'none';
+            document.getElementById("clearButton").style.display = 'none';
+        });
+    </script>
+</body>
+</html>

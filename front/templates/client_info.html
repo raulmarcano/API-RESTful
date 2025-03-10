@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Client Info</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="client-info-container">
+        <h2>Client Information</h2>
+        <div id="client-details">
+        </div>
+    </div>
+
+    <script>
+        function formatCapital(capital) {
+            return "€" + capital.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                }
+        const urlParams = new URLSearchParams(window.location.search);
+        const nif = urlParams.get("nif");
+
+        if (nif) {
+            // Llamamos a la API para obtener los datos del cliente
+            fetch(`/get_client?nif=${nif}`) 
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Client not found');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    const formattedCapital = formatCapital(data.capital);
+                    const clientDetailsDiv = document.getElementById("client-details");
+                    clientDetailsDiv.innerHTML = `
+                        <div><strong>Username:</strong> ${data.username}</div>
+                        <div><strong>Email:</strong> ${data.email}</div>
+                        <div><strong>NIF:</strong> ${data.nif}</div>
+                        <div><strong>Requested Capital:</strong> ${formattedCapital}</div>
+                    `;
+                })
+                .catch(error => {
+                    console.error('Error fetching client data:', error);
+                    document.getElementById("client-details").innerHTML = "<p>Client not found or error loading data.</p>";
+                });
+        } else {
+            document.getElementById("client-details").innerHTML = "<p>NIF is required in the URL to fetch client data.</p>";
+        }
+    </script>
+</body>
+</html>

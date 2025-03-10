@@ -1,0 +1,46 @@
+/* Estilo del contenedor de detalles del cliente */
+#client-details {
+    margin-top: 20px;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    display: none;
+}
+
+/* Mostrar los detalles del cliente cuando estén disponibles */
+#client-details div {
+    margin-bottom: 10px;
+    font-size: 1.2rem;
+}
+
+#client-details div strong {
+    color: #388E3C;
+}
+
+#client-details h3 {
+    padding-bottom: 5px;
+}
+
+/* Estilo de los mensajes de error */
+#error-message {
+    color: red;
+    font-size: 1.1rem;
+    margin-top: 10px;
+    display: none;
+}
+
+#clearButton {
+    background-color: #f44336; /* Rojo */
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    font-size: 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+#clearButton:hover {
+    background-color: #d32f2f; /* Rojo más oscuro */
+}
