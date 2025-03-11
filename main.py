@@ -1,40 +1,32 @@
 import uvicorn
 
 from typing import Annotated
-from fastapi import FastAPI, Query, Request, Form
-from fastapi.templating import Jinja2Templates
-from fastapi.responses import HTMLResponse
+from fastapi import FastAPI, Query, Form, HTTPException, status
+from fastapi.responses import RedirectResponse
+from fastapi.staticfiles import StaticFiles
 
 from models.clientModel import ClientModel
 from services.client_service import ClientService
 from services.mortgage_service import MortgageService
 from utils.error_handler import handle_exceptions
+from front import front_routes
 
 app = FastAPI(
     title= "API_REST",
     description="An API for managing clients and mortgage simulations.",
-    docs_url="/docs",
-    root_path="/api")
+    docs_url="/docs")
 
-Jinja2_template = Jinja2Templates(directory="front/templates")
-
-@app.get("/", response_class=HTMLResponse)
-def root(request: Request):
-    return Jinja2_template.TemplateResponse("index.html", {"request": request})
+app.mount("/static", StaticFiles(directory="front/static"), name="static")
+app.include_router(front_routes.router)
 
 
+    #BACK ROUTES
 @app.post("/users/login")
-def login(username: Annotated[str, Form()], password: Annotated[str, Form()]):
-    return {
-        "username": username,
-        "password": password
-    }
-
-# @app.get("/users/dashboard", response_class=HTMLResponse, summary="Test protected route")
-# def dashboard(request: Request):
-#     return Jinja2_template.TemplateResponse("dashboard.html", {"request": request})
-
-
+async def login(username: Annotated[str, Form()], password: Annotated[str, Form()]):
+    if username == "admin" and password == "admin":
+        return RedirectResponse(url="/users/dashboard", status_code=status.HTTP_303_SEE_OTHER)
+    else:
+        raise HTTPException(status_code=401, detail="Invalid credentials")
 
 @app.get("/test", 
          summary="Test route", 

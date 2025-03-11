@@ -1,14 +1,3 @@
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-}
-
-body {
-    font-family: Arial, sans-serif;
-    background-color: #f0f0f0;
-}
-
 /* Contenedor general para los formularios */
 .form-container {
     width: 100%;
@@ -53,6 +42,7 @@ input, button {
     border: 1px solid #ccc;
     border-radius: 4px;
     font-size: 1rem;
+    box-sizing: border-box;
 }
 
 /* Estilo de los botones */
