@@ -9,7 +9,7 @@ Jinja2_template = Jinja2Templates(directory="front/templates")
 
 @router.get("/", response_class=HTMLResponse)
 def root(request: Request):
-    return Jinja2_template.TemplateResponse("index.html", {"request": request})
+    return Jinja2_template.TemplateResponse("login.html", {"request": request})
 
 @router.get("/users/dashboard", response_class=HTMLResponse)
 def dashboard(request: Request):
