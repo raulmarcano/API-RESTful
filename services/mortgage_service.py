@@ -23,7 +23,7 @@ class MortgageService:
         if tae <= 0 or years <= 0:
             raise HTTPException(status_code=422, detail="Invalid TAE or years of payment")
 
-        simulation = MortgageService.calc_mortgage(client["capital"], tae, years)  # ✅ Ahora funciona bien
+        simulation = MortgageService.calc_mortgage(client["capital"], tae, years)
         db.add_mortgage_simulation(nif, client["capital"], tae, years, simulation["monthly_pay"], simulation["total"])
 
         return {

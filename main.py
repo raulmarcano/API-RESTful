@@ -6,6 +6,7 @@ from fastapi.responses import RedirectResponse
 from fastapi.staticfiles import StaticFiles
 
 from models.clientModel import ClientModel
+from models.mortgageRequest import MortgageRequest
 from services.client_service import ClientService
 from services.mortgage_service import MortgageService
 from utils.error_handler import handle_exceptions
@@ -119,9 +120,11 @@ async def get_client_rout(nif: str = Query(..., description="The NIF (DNI or NIE
               }
           })
 @handle_exceptions
-async def simulate_mortgage(nif: str = Query(..., description="The NIF (DNI or NIE) of the client to retrieve. It should be a valid 8-12 character identifier."),
-                            tae: float = Query(..., description="Annual Percentage Rate"), 
-                            years: int = Query(..., description="Number of years over which the mortgage will be repaid")):
+@handle_exceptions
+async def simulate_mortgage(request: MortgageRequest):
+    nif = request.nif
+    tae = request.tae
+    years = request.years
     return MortgageService.simulate_mortgage(nif, tae, years)
 
 @app.delete("/delete_client",
