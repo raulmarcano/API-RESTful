@@ -1,5 +1,5 @@
 /* Estilo del contenedor de detalles del cliente */
-#client-details {
+#client-details, #mortgage-details {
     margin-top: 20px;
     padding: 20px;
     background-color: #f9f9f9;
@@ -9,16 +9,16 @@
 }
 
 /* Mostrar los detalles del cliente cuando estén disponibles */
-#client-details div {
+#client-details div, #mortgage-details div {
     margin-bottom: 10px;
     font-size: 1.2rem;
 }
 
-#client-details div strong {
+#client-details div strong, #mortgage-details div strong{
     color: #388E3C;
 }
 
-#client-details h3 {
+#client-details h3, #mortgage-details h3 {
     padding-bottom: 5px;
 }
 

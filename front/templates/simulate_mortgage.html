@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Simulate Mortgage</title>
     <link rel="stylesheet" href="/static/form-styles.css">
+    <link rel="stylesheet" href="/static/get_results.css">
 </head>
 <body>
     <div class="form-container">
@@ -24,37 +25,71 @@
             </div>
             <button type="submit">Simulate</button>
         </form>
+
+        <!-- Display mortgage simulation results -->
+        <div id="mortgage-details" style="display:none;">
+            <h3>Mortgage Simulation Results</h3>
+            <div><strong>Monthly Payment:</strong> <span id="monthly-payment"></span></div>
+            <div><strong>Total Payment:</strong> <span id="total-payment"></span></div>
+            <div><strong>Total Interest:</strong> <span id="total-interest"></span></div>
+        </div>
+
+        <div id="error-message" style="display:none;">
+            Error occurred or invalid NIF.
+        </div>
+
+        <button id="clearButton" type="button" style="display:none;">Clear Results</button>
     </div>
-
     <script>
-    document.getElementById("simulateMortgageForm").addEventListener("submit", async function(event) {
-        event.preventDefault();
+        document.getElementById("simulateMortgageForm").addEventListener("submit", async function(event) {
+            event.preventDefault();
 
-        const formData = {
-            nif: document.getElementById("nif").value,
-            tae: parseFloat(document.getElementById("tae").value),
-            years: parseInt(document.getElementById("years").value)
-        };
+            const formData = {
+                nif: document.getElementById("nif").value,
+                tae: parseFloat(document.getElementById("tae").value),
+                years: parseInt(document.getElementById("years").value)
+            };
 
-        try {
-            const response = await fetch("/simulate_mortgage", {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(formData)
-            });
+            try {
+                const response = await fetch("/simulate_mortgage", {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                });
 
-            const data = await response.json();
-            if (response.ok) {
-                alert("Mortgage simulation success!");
-            } else {
-                alert("Error: " + data.detail);
+                const data = await response.json();
+                console.log(data);
+                if (response.ok) {
+                    // Mostrar los datos de la simulación
+                    document.getElementById("monthly-payment").textContent = ((data.monthly_pay).toFixed(2)) + "€";
+                    document.getElementById("total-payment").textContent = ((data.total).toFixed(2)) + "€";
+                    document.getElementById("total-interest").textContent = ((data.total - data.capital).toFixed(2)) + "€";
+
+                    document.getElementById("mortgage-details").style.display = 'block';
+                    document.getElementById("error-message").style.display = 'none';
+                    document.getElementById("clearButton").style.display = 'block';
+                } else {
+                    document.getElementById("mortgage-details").style.display = 'none';
+                    document.getElementById("error-message").style.display = 'block';
+                    document.getElementById("clearButton").style.display = 'block';
+                }
+            } catch (error) {
+                console.error("Error:", error);
+                document.getElementById("mortgage-details").style.display = 'none';
+                document.getElementById("error-message").style.display = 'block';
             }
-        } catch (error) {
-            console.error("Error:", error);
-        }
-    });
+        });
+
+        document.getElementById("clearButton").addEventListener("click", function() {
+            document.getElementById("nif").value = ''; 
+            document.getElementById("tae").value = '';
+            document.getElementById("years").value = '';
+            document.getElementById("mortgage-details").style.display = 'none';
+            document.getElementById("error-message").style.display = 'none';
+            document.getElementById("clearButton").style.display = 'none';
+        });
     </script>
 
 </body>
