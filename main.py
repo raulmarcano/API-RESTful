@@ -1,20 +1,35 @@
 import uvicorn
 
-from fastapi import FastAPI, Query
+from typing import Annotated
+from fastapi import FastAPI, Query, Form, HTTPException, status
+from fastapi.responses import RedirectResponse
+from fastapi.staticfiles import StaticFiles
 
 from models.clientModel import ClientModel
+from models.mortgageRequest import MortgageRequest
 from services.client_service import ClientService
 from services.mortgage_service import MortgageService
 from utils.error_handler import handle_exceptions
+from front import front_routes
 
 app = FastAPI(
     title= "API_REST",
     description="An API for managing clients and mortgage simulations.",
-    docs_url="/docs",
-    root_path="/api")
+    docs_url="/docs")
+
+app.mount("/static", StaticFiles(directory="front/static"), name="static")
+app.include_router(front_routes.router)
 
 
-@app.get("/", 
+    #BACK ROUTES
+@app.post("/users/login")
+async def login(username: Annotated[str, Form()], password: Annotated[str, Form()]):
+    if username == "admin" and password == "admin":
+        return RedirectResponse(url="/users/dashboard", status_code=status.HTTP_303_SEE_OTHER)
+    else:
+        raise HTTPException(status_code=401, detail="Invalid credentials")
+
+@app.get("/test", 
          summary="Test route", 
          description="Returns a basic message for testing a route", 
          responses={
@@ -27,7 +42,7 @@ app = FastAPI(
                  }
              }
          })
-def root():
+def test():
     return{"message": "It´s aliveee!"}
 
 @app.post("/add_client",
@@ -105,9 +120,11 @@ async def get_client_rout(nif: str = Query(..., description="The NIF (DNI or NIE
               }
           })
 @handle_exceptions
-async def simulate_mortgage(nif: str = Query(..., description="The NIF (DNI or NIE) of the client to retrieve. It should be a valid 8-12 character identifier."),
-                            tae: float = Query(..., description="Annual Percentage Rate"), 
-                            years: int = Query(..., description="Number of years over which the mortgage will be repaid")):
+@handle_exceptions
+async def simulate_mortgage(request: MortgageRequest):
+    nif = request.nif
+    tae = request.tae
+    years = request.years
     return MortgageService.simulate_mortgage(nif, tae, years)
 
 @app.delete("/delete_client",

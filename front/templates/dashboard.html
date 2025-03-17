@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    {% include "header.html" %}
+    <div class="dashboard-container">
+        <h2>Welcome, {{ username }}</h2>
+        <p>Here you can manage your client data and mortgage simulations.</p>
+        
+        <div class="dashboard-links">
+            <a href="/get_client_form" class="dashboard-link">
+                <i class="fas fa-user"></i> Get Client Info
+            </a>
+            <a href="/add_client_form" class="dashboard-link">
+                <i class="fas fa-plus-circle"></i> Add New Client
+            </a>
+            <a href="/update_client_form" class="dashboard-link">
+                <i class="fas fa-edit"></i> Update Client Info
+            </a>
+            <a href="/simulate_mortgage_form" class="dashboard-link">
+                <i class="fas fa-calculator"></i> Simulate Mortgage
+            </a>
+            <a href="/delete_client_form" class="dashboard-link">
+                <i class="fas fa-trash-alt"></i> Delete Client
+            </a>
+        </div>
+    </div>
+    {% include "footer.html" %}
+</body>
+</html>
