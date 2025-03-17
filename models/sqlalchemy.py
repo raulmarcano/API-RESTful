@@ -1,5 +1,5 @@
-from sqlalchemy import create_engine, Column, Integer, String, Float, ForeignKey
-from sqlalchemy.orm import relationship, sessionmaker, declarative_base
+from sqlalchemy import Column, Integer, String, Float, ForeignKey
+from sqlalchemy.orm import relationship, declarative_base
 
 DB_Base = declarative_base()
 
@@ -29,8 +29,3 @@ class MortgageSimulation(DB_Base):
 
     # Relación con el cliente
     client = relationship("Client", back_populates="simulations")
-
-# Crear la conexión a la base de datos
-engine = create_engine("sqlite:///./sqlite/database-alchemy.db")
-
-DB_Base.metadata.create_all(engine)

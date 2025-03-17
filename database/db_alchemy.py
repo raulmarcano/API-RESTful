@@ -1,7 +1,12 @@
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.exc import IntegrityError
+from sqlalchemy import create_engine
 
-from database.sqlalchemy_config import engine, Client, MortgageSimulation
+from models.sqlalchemy import Client, MortgageSimulation, DB_Base
+
+# Crear la conexión a la base de datos
+engine = create_engine("sqlite:///./sqlite/database-alchemy.db")
+DB_Base.metadata.create_all(engine)
 
 # Crear la sesión
 Session = sessionmaker(bind=engine)
