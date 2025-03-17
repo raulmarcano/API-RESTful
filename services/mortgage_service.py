@@ -1,5 +1,5 @@
 from fastapi import HTTPException
-from database.db import db
+from database.db_alchemy import db
 from services.client_service import ClientService
 
 class MortgageService:

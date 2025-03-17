@@ -1,10 +1,10 @@
 from sqlalchemy import create_engine, Column, Integer, String, Float, ForeignKey
 from sqlalchemy.orm import relationship, sessionmaker, declarative_base
 
-Base = declarative_base()
+DB_Base = declarative_base()
 
 # Definición de modelos
-class Client(Base):
+class Client(DB_Base):
     __tablename__ = 'clients'
 
     id = Column(Integer, primary_key=True, autoincrement=True)
@@ -16,7 +16,7 @@ class Client(Base):
     # Relación con la simulación hipotecaria
     simulations = relationship("MortgageSimulation", back_populates="client")
 
-class MortgageSimulation(Base):
+class MortgageSimulation(DB_Base):
     __tablename__ = 'mortgage_simulations'
 
     id = Column(Integer, primary_key=True, autoincrement=True)
@@ -31,6 +31,6 @@ class MortgageSimulation(Base):
     client = relationship("Client", back_populates="simulations")
 
 # Crear la conexión a la base de datos
-engine = create_engine("sqlite:///../sqlite/database-alchemy.db")
+engine = create_engine("sqlite:///./sqlite/database-alchemy.db")
 
-Base.metadata.create_all(engine)
+DB_Base.metadata.create_all(engine)
