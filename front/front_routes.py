@@ -34,3 +34,7 @@ def simulate_mortgage_form(request: Request):
 @router.get("/get_client_form", response_class=HTMLResponse)
 def get_client_form(request: Request):
     return Jinja2_template.TemplateResponse("get_client.html", {"request": request})
+
+@router.get("/simulations", response_class=HTMLResponse)
+def show_simulations(request: Request):
+    return Jinja2_template.TemplateResponse("simulations.html", {"request": request})

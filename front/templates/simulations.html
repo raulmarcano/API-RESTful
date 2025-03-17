@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulations</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <h2>Mortgage Simulations</h2>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>NIF</th>
+                <th>Capital</th>
+                <th>TAE</th>
+                <th>Years</th>
+                <th>Monthly Payment</th>
+                <th>Total</th>
+            </tr>
+        </thead>
+        <tbody id="simulations-table"></tbody>
+    </table>
+
+    <script>
+        async function loadSimulations() {
+            try {
+                const response = await fetch("/get_simulations");
+                if (!response.ok) throw new Error("No data found");
+
+                const simulations = await response.json();
+                const tableBody = document.getElementById("simulations-table");
+
+                simulations.forEach(sim => {
+                    const row = document.createElement("tr");
+                    row.innerHTML = `
+                        <td>${sim.nif}</td>
+                        <td>${sim.capital}</td>
+                        <td>${sim.tae}</td>
+                        <td>${sim.years}</td>
+                        <td>${sim.monthly_pay}</td>
+                        <td>${sim.total}</td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+            } catch (error) {
+                console.error("Error loading simulations:", error);
+            }
+        }
+
+        window.onload = loadSimulations;
+    </script>
+</body>
+</html>

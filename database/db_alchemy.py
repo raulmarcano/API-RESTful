@@ -68,6 +68,20 @@ class Database:
         except IntegrityError:
             self.session.rollback()
             raise Exception("Error saving simulation in database")
+        
+    def get_mortgage_simulations(self):
+        simulations = self.session.query(MortgageSimulation).all()
+        return [
+            {
+                "nif": sim.nif,
+                "capital": sim.capital,
+                "tae": sim.tae,
+                "years": sim.years,
+                "monthly_pay": sim.monthly_pay,
+                "total": sim.total
+            }
+            for sim in simulations
+        ]  
 
 # Instancia de la base de datos
 db = Database()

@@ -34,3 +34,9 @@ class MortgageService:
             "monthly_pay": simulation["monthly_pay"],
             "total": simulation["total"]
         }
+
+    def get_simulations_from_db():
+        simulations = db.get_mortgage_simulations()
+        if not simulations:
+            raise HTTPException(status_code=404, detail="No simulations found")
+        return simulations

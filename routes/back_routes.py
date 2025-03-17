@@ -8,6 +8,7 @@ from models.mortgageRequest import MortgageRequest
 from services.client_service import ClientService
 from services.mortgage_service import MortgageService
 from utils.error_handler import handle_exceptions
+from database.db_alchemy import db
 
 
 router = APIRouter()
@@ -139,3 +140,31 @@ async def simulate_mortgage(request: MortgageRequest):
 @handle_exceptions
 async def delete_client(nif: str = Query(..., description="The NIF of the client to delete.")):
     return ClientService.remove_client(nif)
+
+@router.get("/get_simulations", summary="Get all mortgage simulations",
+            description="Retrieves all mortgage simulations stored in the database.",
+            responses={
+                200: {
+                    "description": "List of simulations",
+                    "content": {
+                        "application/json": {
+                            "example": [
+                                {
+                                    "nif": "55127366T",
+                                    "capital": 100000,
+                                    "tae": 3.5,
+                                    "years": 20,
+                                    "monthly_pay": 579.98,
+                                    "total": 139195.20
+                                }
+                            ]
+                        }
+                    }
+                },
+                404: {
+                    "description": "No simulations found"
+                }
+            })
+@handle_exceptions
+async def get_simulations():
+    return MortgageService.get_simulations_from_db()
