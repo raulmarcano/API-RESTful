@@ -1,5 +1,5 @@
 from fastapi import HTTPException
-from database.db import db
+from database.db_alchemy import db
 from models.clientModel import ClientModel
 
 class ClientService:
