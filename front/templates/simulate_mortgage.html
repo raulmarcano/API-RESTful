@@ -9,7 +9,7 @@
 <body>
     <div class="form-container">
         <h2>Simulate Mortgage</h2>
-        <form action="/simulate_mortgage" method="get">
+        <form id="simulateMortgageForm">
             <div>
                 <label for="nif">Enter Client NIF</label>
                 <input type="text" id="nif" name="nif" required>
@@ -25,5 +25,37 @@
             <button type="submit">Simulate</button>
         </form>
     </div>
+
+    <script>
+    document.getElementById("simulateMortgageForm").addEventListener("submit", async function(event) {
+        event.preventDefault();
+
+        const formData = {
+            nif: document.getElementById("nif").value,
+            tae: parseFloat(document.getElementById("tae").value),
+            years: parseInt(document.getElementById("years").value)
+        };
+
+        try {
+            const response = await fetch("/simulate_mortgage", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(formData)
+            });
+
+            const data = await response.json();
+            if (response.ok) {
+                alert("Mortgage simulation success!");
+            } else {
+                alert("Error: " + data.detail);
+            }
+        } catch (error) {
+            console.error("Error:", error);
+        }
+    });
+    </script>
+
 </body>
 </html>

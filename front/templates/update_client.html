@@ -9,7 +9,7 @@
 <body>
     <div class="form-container">
         <h2>Update Client Information</h2>
-        <form action="/update_client" method="post">
+        <form id="updateClientForm">
             <div>
                 <label for="nif">Enter Client NIF</label>
                 <input type="text" id="nif" name="nif" required>
@@ -29,5 +29,39 @@
             <button type="submit">Update Client</button>
         </form>
     </div>
+
+    <script>
+    document.getElementById("updateClientForm").addEventListener("submit", async function(event) {
+        event.preventDefault();
+
+        const formData = {
+            nif: document.getElementById("nif").value,
+            username: document.getElementById("username").value,
+            email: document.getElementById("email").value,
+            capital: parseFloat(document.getElementById("capital").value)
+        };
+
+        try {
+            const response = await fetch("/update_client", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(formData)
+            });
+
+            const data = await response.json();
+            if (response.ok) {
+                alert("Client updated successfully");
+                document.getElementById("updateClientForm").reset();
+            } else {
+                alert("Error: " + data.detail);
+            }
+        } catch (error) {
+            console.error("Error:", error);
+        }
+    });
+    </script>
+
 </body>
 </html>

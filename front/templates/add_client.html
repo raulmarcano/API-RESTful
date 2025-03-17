@@ -9,7 +9,7 @@
 <body>
     <div class="form-container">
         <h2>Add New Client</h2>
-        <form action="/add_client" method="post">
+        <form id="clientForm">
             <div>
                 <label for="username">Username</label>
                 <input type="text" id="username" name="username" required>
@@ -29,5 +29,38 @@
             <button type="submit">Add Client</button>
         </form>
     </div>
+
+    <script>
+    document.getElementById("clientForm").addEventListener("submit", async function(event) {
+        event.preventDefault();
+
+        const formData = {
+            username: document.getElementById("username").value,
+            email: document.getElementById("email").value,
+            nif: document.getElementById("nif").value,
+            capital: parseFloat(document.getElementById("capital").value)
+        };
+
+        try {
+            const response = await fetch("/add_client", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(formData)
+            });
+
+            const data = await response.json();
+            if (response.ok) {
+                alert("Cliente agregado con éxito");
+                document.getElementById("clientForm").reset();
+            } else {
+                alert("Error: " + data.detail);
+            }
+        } catch (error) {
+            console.error("Error:", error);
+        }
+    });
+    </script>
 </body>
 </html>
