@@ -8,9 +8,10 @@ from models.mortgageRequest import MortgageRequest
 from services.client_service import ClientService
 from services.mortgage_service import MortgageService
 from utils.error_handler import handle_exceptions
+from middlewares.verify_token_route import VerifyTokenRoute
 
 
-router = APIRouter()
+router = APIRouter(route_class=VerifyTokenRoute)
 
     #BACK ROUTES
 @router.post("/users/login")
